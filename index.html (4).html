@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10384a">
+  <meta name="description" content="Ask Atlantic - your live tour assistant for Atlantic Coast Tours.">
+
+  <title>Ask Atlantic | Atlantic Coast Tours</title>
+
+  <style>
+    :root {
+      --navy: #10384a;
+      --teal: #087e83;
+      --teal-dark: #06666b;
+      --seafoam: #e5f5f2;
+      --background: #edf4f6;
+      --white: #ffffff;
+      --text: #193443;
+      --muted: #6b808a;
+      --border: #dbe6e9;
+      --error: #a52a38;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .app {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 20px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      background: var(--teal);
+      font-size: 25px;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 750;
+      letter-spacing: -0.03em;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 0.82rem;
+      color: #c4dbe0;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 15px;
+      font-size: 0.76rem;
+      color: #c4e5df;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #63dbac;
+      border-radius: 50%;
+    }
+
+    .chat {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 24px 16px;
+      background:
+        radial-gradient(
+          circle at top right,
+          #e4f4f1 0,
+          transparent 45%
+        ),
+        #f7fafb;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      max-width: 88%;
+    }
+
+    .message.bot {
+      align-items: flex-start;
+      margin-right: auto;
+    }
+
+    .message.user {
+      align-items: flex-end;
+      margin-left: auto;
+    }
+
+    .bubble {
+      padding: 14px 17px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .bot .bubble {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 3px 12px rgba(16, 56, 74, 0.04);
+    }
+
+    .user .bubble {
+      background: var(--teal);
+      color: var(--white);
+      border-bottom-right-radius: 5px;
+    }
+
+    .message.error .bubble {
+      border-color: #efc4ca;
+      background: #fff3f4;
+      color: var(--error);
+    }
+
+    .timestamp {
+      margin-top: 6px;
+      padding: 0 5px;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .thinking .bubble {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .composer {
+      padding: 14px 16px;
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      background: var(--white);
+      flex-shrink: 0;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-row input {
+      flex: 1;
+      min-width: 0;
+      height: 50px;
+      padding: 0 16px;
+      border: 1px solid #cadadd;
+      border-radius: 14px;
+      outline: none;
+      font: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: #f9fbfc;
+    }
+
+    .input-row input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(8, 126, 131, 0.12);
+    }
+
+    .input-row button {
+      height: 50px;
+      padding: 0 22px;
+      border: none;
+      border-radius: 14px;
+      background: var(--teal);
+      color: var(--white);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .input-row button:hover {
+      background: var(--teal-dark);
+    }
+
+    .input-row button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .footer-note {
+      margin: 10px 0 0;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    @media (min-width: 650px) {
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .app {
+        max-width: 680px;
+        height: min(820px, calc(100dvh - 48px));
+        border-radius: 22px;
+        box-shadow: 0 20px 65px rgba(16, 56, 74, 0.14);
+      }
+
+      .header {
+        padding: 24px 28px;
+      }
+
+      .chat {
+        padding: 30px 28px;
+      }
+
+      .composer {
+        padding: 20px 24px;
+      }
+
+      .message {
+        max-width: 78%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .chat {
+        scroll-behavior: auto;
+      }
+
+      .input-row button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🌊</div>
+
+        <div>
+          <h1>Ask Atlantic</h1>
+          <p>Atlantic Coast Tours · West of Ireland</p>
+        </div>
+      </div>
+
+      <div class="status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>Live tour information on every question</span>
+      </div>
+    </header>
+
+    <section
+      class="chat"
+      id="chat"
+      role="log"
+      aria-label="Chat conversation"
+      aria-live="polite"
+      aria-relevant="additions"
+    >
+      <div class="message bot">
+        <div class="bubble">
+Hello! 👋 Welcome to Atlantic Coast Tours.
+
+I'm Ask Atlantic, your tour assistant for the beautiful west of Ireland.
+
+Ask me about our tours, prices, availability or places to explore.
+
+I'll check our latest tour information for every question!
+        </div>
+      </div>
+    </section>
+
+    <form class="composer" id="chatForm">
+      <div class="input-row">
+        <input
+          type="text"
+          id="question"
+          placeholder="Ask about tours, prices, availability..."
+          aria-label="Your question"
+          autocomplete="off"
+          required
+        >
+
+        <button type="submit" id="sendButton">
+          Send
+        </button>
+      </div>
+
+      <p class="footer-note">
+        Powered by live tour data · Atlantic Coast Tours
+      </p>
+    </form>
+
+  </main>
+
+  <script>
+    "use strict";
+
+    // ------------------------------------------
+    // CONFIGURATION
+    // ------------------------------------------
+
+    const CSV_URL =
+      "https://docs.google.com/spreadsheets/d/" +
+      "1balBGf8QhZ5dc-RCCAPt2kcrcf6m_YRh0HL_r8bBtJw/" +
+      "export?format=csv";
+
+    const CHAT_URL =
+      "https://luas-class.kluxy.app/chat";
+
+    const SYSTEM =
+      "You are Ask Atlantic, the customer assistant for Atlantic Coast Tours. " +
+      "Answer only from the live data you are given. " +
+      "Quote exact prices in euro and slots left. " +
+      "If something is not in the data, say so. " +
+      "If a value looks implausible, say so and suggest the customer checks with staff. " +
+      "Be warm and brief.";
+
+    // ------------------------------------------
+    // ELEMENTS
+    // ------------------------------------------
+
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("question");
+    const sendButton = document.getElementById("sendButton");
+
+    let isBusy = false;
+
+    // ------------------------------------------
+    // CHAT DISPLAY
+    // ------------------------------------------
+
+    function addMessage(text, role, fetchedAt = null) {
+      const message = document.createElement("div");
+      message.className = "message " + role;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+
+      // textContent prevents HTML injection.
+      bubble.textContent = text;
+
+      message.appendChild(bubble);
+
+      if (fetchedAt) {
+        const timestamp = document.createElement("div");
+        timestamp.className = "timestamp";
+        timestamp.textContent =
+          "Data fetched live at " + fetchedAt;
+
+        message.appendChild(timestamp);
+      }
+
+      chat.appendChild(message);
+      scrollToBottom();
+
+      return message;
+    }
+
+    function scrollToBottom() {
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function setBusy(busy) {
+      isBusy = busy;
+      sendButton.disabled = busy;
+      input.disabled = busy;
+      sendButton.textContent = busy ? "Sending..." : "Send";
+    }
+
+    function getTime() {
+      return new Date().toLocaleTimeString("en-IE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+    }
+
+    // ------------------------------------------
+    // FETCH LIVE TOUR DATA
+    // ------------------------------------------
+
+    async function fetchLiveCSV() {
+      // Cache-busting parameter ensures each
+      // question requests fresh catalogue data.
+      const separator = CSV_URL.includes("?") ? "&" : "?";
+
+      const url =
+        CSV_URL + separator + "_t=" + Date.now();
+
+      const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          "Unable to fetch live tour catalogue. " +
+          "HTTP " + response.status + " " +
+          response.statusText
+        );
+      }
+
+      const csv = await response.text();
+
+      if (!csv.trim()) {
+        throw new Error(
+          "The live tour catalogue returned empty data."
+        );
+      }
+
+      return csv;
+    }
+
+    // ------------------------------------------
+    // SEND QUESTION TO CLASS BRAIN
+    // ------------------------------------------
+
+    async function askBrain(question, csv) {
+      const payload = {
+        system: SYSTEM,
+        messages: [
+          {
+            role: "user",
+            content:
+              "Live data (CSV):\n" +
+              csv +
+              "\n\nCustomer question: " +
+              question
+          }
+        ]
+      };
+
+      const response = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        let detail = "";
+
+        try {
+          const errorBody = await response.text();
+          detail = errorBody.slice(0, 300);
+        } catch (_) {
+          // Preserve the HTTP error if the
+          // response body cannot be read.
+        }
+
+        throw new Error(
+          "Class brain request failed. HTTP " +
+          response.status +
+          (detail ? ": " + detail : "")
+        );
+      }
+
+      const data = await response.json();
+
+      if (
+        typeof data.reply !== "string" ||
+        !data.reply.trim()
+      ) {
+        throw new Error(
+          "The class brain returned no valid reply."
+        );
+      }
+
+      return data.reply;
+    }
+
+    // ------------------------------------------
+    // HANDLE CUSTOMER QUESTION
+    // ------------------------------------------
+
+    async function sendQuestion(question) {
+      if (isBusy || !question.trim()) {
+        return;
+      }
+
+      const cleanQuestion = question.trim();
+
+      addMessage(cleanQuestion, "user");
+
+      input.value = "";
+      setBusy(true);
+
+      const thinkingMessage = addMessage(
+        "Thinking...",
+        "bot thinking"
+      );
+
+      let fetchedAt = null;
+
+      try {
+        // Step 1: Fetch fresh CSV for THIS question.
+        const csv = await fetchLiveCSV();
+
+        // Record the time the live data was fetched.
+        fetchedAt = getTime();
+
+        // Step 2: Send question + CSV to class brain.
+        const reply = await askBrain(cleanQuestion, csv);
+
+        // Step 3: Remove thinking indicator.
+        thinkingMessage.remove();
+
+        // Step 4: Display the brain's reply.
+        addMessage(reply, "bot", fetchedAt);
+
+      } catch (error) {
+        thinkingMessage.remove();
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : String(error);
+
+        // Display errors inside the conversation.
+        addMessage(
+          "Sorry, something went wrong.\n\n" +
+          message,
+          "bot error"
+        );
+
+        console.error("Ask Atlantic error:", error);
+
+      } finally {
+        setBusy(false);
+        input.focus();
+        scrollToBottom();
+      }
+    }
+
+    // ------------------------------------------
+    // FORM SUBMISSION
+    // ------------------------------------------
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const question = input.value;
+
+      sendQuestion(question);
+    });
+
+    // Enter submits the form automatically.
+    // No separate keydown handler is required.
+
+  </script>
+
+</body>
+</html>
