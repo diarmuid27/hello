@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Personal page for Diarmuid, Certificate student at National College of Ireland.">
+
+  <title>Diarmuid | Personal Page</title>
+
+  <style>
+    :root {
+      --background: #f5f7fb;
+      --surface: #ffffff;
+      --primary: #2563eb;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--background);
+      color: var(--text);
+      font-family: system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      line-height: 1.6;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 620px;
+      padding: 36px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
+    }
+
+    .accent {
+      width: 48px;
+      height: 5px;
+      background: var(--primary);
+      border-radius: 10px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.8rem, 8vw, 4.2rem);
+      font-weight: 750;
+      letter-spacing: -0.05em;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .divider {
+      height: 1px;
+      margin: 30px 0;
+      background: var(--border);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 0.85rem;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .statement {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 450;
+      line-height: 1.8;
+    }
+
+    footer {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: 600px) {
+      .card {
+        padding: 52px;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .card {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="card">
+
+    <div class="accent" aria-hidden="true"></div>
+
+    <header>
+      <p class="eyebrow">Welcome to my page</p>
+
+      <h1>Diarmuid.</h1>
+
+      <p class="subtitle">
+        Certificate student, National College of Ireland
+      </p>
+    </header>
+
+    <div class="divider"></div>
+
+    <section aria-labelledby="interest-heading">
+      <h2 id="interest-heading">What interests me</h2>
+
+      <p class="statement">
+        I care about helping businesses use AI,
+        data and smarter marketing strategies
+        to turn customer insights into measurable
+        revenue growth.
+      </p>
+    </section>
+
+    <footer>
+      <span>Today is </span>
+      <time id="today"></time>
+    </footer>
+
+  </main>
+
+  <script>
+    // Display today's date using the visitor's local time.
+    const today = new Date();
+
+    const formattedDate = new Intl.DateTimeFormat("en-IE", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(today);
+
+    const dateElement = document.getElementById("today");
+
+    dateElement.textContent = formattedDate;
+
+    // Machine-readable date for accessibility and semantics.
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    dateElement.setAttribute(
+      "datetime",
+      `${year}-${month}-${day}`
+    );
+  </script>
+
+</body>
+</html>
